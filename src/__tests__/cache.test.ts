@@ -43,7 +43,7 @@ describe("getProducts", () => {
 
 	it("should fetch fresh data when cache is expired", async () => {
 		const oldTime = Date.now() - 6 * 60 * 1000; // 6 mins ago
-		const module = require("../lib/cache");
+		const module = require("@/lib/cache");
 		module.cachedProducts = data;
 		module.cacheTime = oldTime;
 
