@@ -7,26 +7,26 @@ export interface ProductsInterface {
 export interface ProductInterface {
 	id: number;
 	title: string;
-	description: string;
-	category: string;
-	price: number;
-	discountPercentage: number;
-	rating: number;
-	stock: number;
+	description?: string;
+	category?: string;
+	price?: number;
+	discountPercentage?: number;
+	rating?: number;
+	stock?: number;
 	tags?: string[] | null;
 	brand?: string | null;
-	sku: string;
-	weight: number;
-	dimensions: DimensionsInterface;
-	warrantyInformation: string;
-	shippingInformation: string;
-	availabilityStatus: string;
+	sku?: string;
+	weight?: number;
+	dimensions?: DimensionsInterface;
+	warrantyInformation?: string;
+	shippingInformation?: string;
+	availabilityStatus?: string;
 	reviews?: ReviewInterface[] | null;
-	returnPolicy: string;
-	minimumOrderQuantity: number;
-	meta: MetaInterface;
+	returnPolicy?: string;
+	minimumOrderQuantity?: number;
+	meta?: MetaInterface;
 	images?: string[] | null;
-	thumbnail: string;
+	thumbnail?: string;
 }
 export interface DimensionsInterface {
 	width: number;
