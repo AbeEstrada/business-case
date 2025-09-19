@@ -14,7 +14,7 @@ export async function getProducts({
 	q?: string;
 	category?: string;
 	sort?: "asc" | "desc";
-	order?: "title" | "price" | "rating" | "stock" | "discountPercentage";
+	order?: string;
 	page?: number;
 	limit?: number;
 } = {}): Promise<ProductsInterface> {
@@ -25,17 +25,20 @@ export async function getProducts({
 		return cached.data;
 	}
 
-	const url = new URL("https://dummyjson.com/products");
+	const endpoint = category ? `/category/${category}` : q ? "/search" : "/";
+	const url = new URL(`https://dummyjson.com/products${endpoint}`);
+
 	url.searchParams.set("limit", String(limit));
 	url.searchParams.set("skip", String((page - 1) * limit));
 
 	if (q) url.searchParams.set("q", q);
 	if (category) url.searchParams.set("category", category);
-	if (sort) url.searchParams.set("order", sort);
 	if (order) url.searchParams.set("sortBy", order);
+	if (sort) url.searchParams.set("order", sort);
 
 	try {
 		const res = await fetch(url.toString());
+
 		if (!res.ok) throw new Error("Failed to fetch products");
 
 		const data: ProductsInterface = await res.json();
