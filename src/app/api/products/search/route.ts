@@ -6,8 +6,8 @@ export async function GET(request: NextRequest) {
 
 	const query = searchParams.get("q");
 	const category = searchParams.get("category");
-	const sort = searchParams.get("sort") as "asc" | "desc" | null;
-	const order = searchParams.get("order");
+	const sort = searchParams.get("sort");
+	const order = searchParams.get("order") as "asc" | "desc" | null;
 	const page = searchParams.get("page");
 	const limit = searchParams.get("limit");
 

@@ -13,8 +13,8 @@ export async function getProducts({
 }: {
 	q?: string;
 	category?: string;
-	sort?: "asc" | "desc";
-	order?: string;
+	sort?: string;
+	order?: "asc" | "desc";
 	page?: number;
 	limit?: number;
 } = {}): Promise<ProductsInterface> {
@@ -33,8 +33,8 @@ export async function getProducts({
 
 	if (q) url.searchParams.set("q", q);
 	if (category) url.searchParams.set("category", category);
-	if (order) url.searchParams.set("sortBy", order);
-	if (sort) url.searchParams.set("order", sort);
+	if (order) url.searchParams.set("order", order);
+	if (sort) url.searchParams.set("sortBy", sort);
 
 	try {
 		const res = await fetch(url.toString());
