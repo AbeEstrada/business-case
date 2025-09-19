@@ -37,7 +37,7 @@ describe("/api/products/search", () => {
 			sort: undefined,
 			order: undefined,
 			page: 1,
-			limit: 10,
+			limit: 30,
 		});
 	});
 
