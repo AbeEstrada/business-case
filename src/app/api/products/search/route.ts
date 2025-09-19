@@ -11,6 +11,12 @@ export async function GET(request: NextRequest) {
 	const page = searchParams.get("page");
 	const limit = searchParams.get("limit");
 
+	const delay = searchParams.get("delay");
+	if (delay && !Number.isNaN(Number(delay))) {
+		const delayMs = parseInt(delay, 10);
+		await new Promise<void>((res) => setTimeout(res, delayMs));
+	}
+
 	try {
 		const pageNumber = page ? parseInt(page, 10) : 1;
 		const limitNumber = limit ? parseInt(limit, 10) : 30;
