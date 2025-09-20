@@ -8,6 +8,8 @@ import type { ProductsInterface } from "@/interfaces/Products";
 
 jest.mock("@/lib/cache");
 
+const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
+
 describe("/api/products/search", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -22,9 +24,7 @@ describe("/api/products/search", () => {
 		};
 		(getProducts as jest.Mock).mockResolvedValueOnce(data);
 
-		const request = new NextRequest(
-			"http://localhost:3000/api/products/search",
-		);
+		const request = new NextRequest(`${BASE_URL}/api/products/search`);
 		const response = await GET(request);
 		const json = await response.json();
 
@@ -51,7 +51,7 @@ describe("/api/products/search", () => {
 		(getProducts as jest.Mock).mockResolvedValueOnce(data);
 
 		const request = new NextRequest(
-			"http://localhost:3000/api/products/search?q=test&category=electronics&sort=asc&order=price&page=2&limit=5",
+			`${BASE_URL}/api/products/search?q=test&category=electronics&sort=asc&order=price&page=2&limit=5`,
 		);
 		const response = await GET(request);
 
@@ -68,7 +68,7 @@ describe("/api/products/search", () => {
 
 	it("should return 400 for invalid page parameter", async () => {
 		const request = new NextRequest(
-			"http://localhost:3000/api/products/search?page=invalid",
+			`${BASE_URL}/api/products/search?page=invalid`,
 		);
 		const response = await GET(request);
 		const json = await response.json();
@@ -80,9 +80,7 @@ describe("/api/products/search", () => {
 	});
 
 	it("should return 400 for negative page parameter", async () => {
-		const request = new NextRequest(
-			"http://localhost:3000/api/products/search?page=-1",
-		);
+		const request = new NextRequest(`${BASE_URL}/api/products/search?page=-1`);
 		const response = await GET(request);
 		const json = await response.json();
 
@@ -94,7 +92,7 @@ describe("/api/products/search", () => {
 
 	it("should return 400 for invalid limit parameter", async () => {
 		const request = new NextRequest(
-			"http://localhost:3000/api/products/search?limit=invalid",
+			`${BASE_URL}/api/products/search?limit=invalid`,
 		);
 		const response = await GET(request);
 		const json = await response.json();
@@ -106,9 +104,7 @@ describe("/api/products/search", () => {
 	});
 
 	it("should return 400 for negative limit parameter", async () => {
-		const request = new NextRequest(
-			"http://localhost:3000/api/products/search?limit=0",
-		);
+		const request = new NextRequest(`${BASE_URL}/api/products/search?limit=0`);
 		const response = await GET(request);
 		const json = await response.json();
 
@@ -123,9 +119,7 @@ describe("/api/products/search", () => {
 			new Error("Network failure"),
 		);
 
-		const request = new NextRequest(
-			"http://localhost:3000/api/products/search",
-		);
+		const request = new NextRequest(`${BASE_URL}/api/products/search`);
 		const response = await GET(request);
 		const json = await response.json();
 
@@ -143,7 +137,7 @@ describe("/api/products/search", () => {
 		(getProducts as jest.Mock).mockResolvedValueOnce(data);
 
 		const request = new NextRequest(
-			"http://localhost:3000/api/products/search?q=nonexistent",
+			`${BASE_URL}/api/products/search?q=nonexistent`,
 		);
 		const response = await GET(request);
 		const json = await response.json();
