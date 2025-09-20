@@ -45,6 +45,8 @@ export async function GET(request: NextRequest) {
 			limit: data.limit ?? limitNumber,
 		});
 	} catch (error) {
-		return Response.json({ error }, { status: 500 });
+		const errorMessage =
+			error instanceof Error ? error.message : "Unknown error occurred";
+		return Response.json({ error: errorMessage }, { status: 500 });
 	}
 }

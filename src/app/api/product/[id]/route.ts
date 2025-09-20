@@ -13,7 +13,9 @@ export async function GET(
     if (!product) return Response.json({ error: "Product not found" }, { status: 404 });
 
     return Response.json(product);
-  } catch (error) {
-    return Response.json({ error: "Internal Server Error" }, { status: 500 });
-  }
+	} catch (error) {
+		const errorMessage =
+			error instanceof Error ? error.message : "Unknown error occurred";
+		return Response.json({ error: errorMessage }, { status: 500 });
+	}
 }
