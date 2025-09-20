@@ -23,7 +23,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 	}).format(product.price ?? 0);
 
 	return (
-		<article className="group relative">
+		<article className="group relative mx-auto">
 			<Link
 				href={{
 					pathname: `/product/${product.id}`,

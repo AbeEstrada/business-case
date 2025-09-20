@@ -29,7 +29,7 @@ const ProductsList: FC = () => {
 	}
 
 	return (
-		<section className="grid grid-cols-1 md:grid-cols-4 gap-4 m-4">
+		<section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 m-4">
 			{products.map((product) => (
 				<ProductCard key={product.id} product={product} />
 			))}
