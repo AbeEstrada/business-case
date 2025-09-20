@@ -11,11 +11,13 @@ export default function Home() {
 		<Suspense>
 			<ProductsProvider>
 				<main className="max-w-5xl mx-auto">
-					<header className="flex items-center gap-4 m-4">
+					<header className="flex flex-col md:flex-row items-center gap-4 m-4">
 						<SearchInput />
-						<CategorySelect />
-						<SortSelect />
-						<OrderSelect />
+						<div className="flex flex-col gap-4 min-[480px]:flex-row">
+							<CategorySelect />
+							<SortSelect />
+							<OrderSelect />
+						</div>
 					</header>
 					<ProductsList />
 				</main>
