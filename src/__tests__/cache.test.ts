@@ -3,6 +3,7 @@ import type {
 	ProductsInterface,
 } from "@/interfaces/Products";
 import type { CategoriesInterface } from "@/interfaces/Category";
+import { DUMMY_URL } from "@/lib/constants";
 import {
 	getProducts,
 	getCategories,
@@ -30,17 +31,17 @@ const mockCategoriesData: CategoriesInterface = [
 	{
 		slug: "smartphones",
 		name: "Smartphones",
-		url: "https://dummyjson.com/products/category/smartphones",
+		url: `${DUMMY_URL}/products/category/smartphones`,
 	},
 	{
 		slug: "laptops",
 		name: "Laptops",
-		url: "https://dummyjson.com/products/category/laptops",
+		url: `${DUMMY_URL}/products/category/laptops`,
 	},
 	{
 		slug: "fragrances",
 		name: "Fragrances",
-		url: "https://dummyjson.com/products/category/fragrances",
+		url: `${DUMMY_URL}/products/category/fragrances`,
 	},
 ];
 
@@ -54,11 +55,8 @@ const mockProductData: ProductInterface = {
 	stock: 50,
 	brand: "TestBrand",
 	category: "TestCategory",
-	thumbnail: "https://dummyjson.com/image.jpg",
-	images: [
-		"https://dummyjson.com/image1.jpg",
-		"https://dummyjson.com/image2.jpg",
-	],
+	thumbnail: `${DUMMY_URL}/image.jpg`,
+	images: [`${DUMMY_URL}/image1.jpg`, `${DUMMY_URL}/image2.jpg`],
 };
 
 function createCachedFetchTest<T>({
@@ -168,7 +166,7 @@ function createCachedFetchTest<T>({
 describe("getProducts", () => {
 	createCachedFetchTest({
 		fetchFn: getProducts,
-		url: "https://dummyjson.com/products/?limit=30&skip=0",
+		url: `${DUMMY_URL}/products/?limit=30&skip=0`,
 		mockData: mockProductsData,
 		errorMessage: "Failed to fetch products",
 	});
@@ -177,7 +175,7 @@ describe("getProducts", () => {
 describe("getCategories", () => {
 	createCachedFetchTest({
 		fetchFn: getCategories,
-		url: "https://dummyjson.com/products/categories",
+		url: `${DUMMY_URL}/products/categories`,
 		mockData: mockCategoriesData,
 		errorMessage: "Failed to fetch categories",
 	});
@@ -186,7 +184,7 @@ describe("getCategories", () => {
 describe("getProductById", () => {
 	createCachedFetchTest({
 		fetchFn: () => getProductById("1"),
-		url: "https://dummyjson.com/products/1",
+		url: `${DUMMY_URL}/products/1`,
 		mockData: mockProductData,
 		errorMessage: "Failed to fetch product",
 	});

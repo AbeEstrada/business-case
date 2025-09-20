@@ -3,6 +3,7 @@ import type {
 	ProductsInterface,
 } from "@/interfaces/Products";
 import type { CategoriesInterface } from "@/interfaces/Category";
+import { DUMMY_URL, CACHE_DURATION } from "@/lib/constants";
 
 const cache = new Map<
 	string,
@@ -11,7 +12,6 @@ const cache = new Map<
 		timestamp: number;
 	}
 >();
-const CACHE_DURATION = 5 * 60 * 1000;
 
 export async function getProducts({
 	q,
@@ -36,7 +36,7 @@ export async function getProducts({
 	}
 
 	const endpoint = category ? `/category/${category}` : q ? "/search" : "/";
-	const url = new URL(`https://dummyjson.com/products${endpoint}`);
+	const url = new URL(`${DUMMY_URL}/products${endpoint}`);
 
 	url.searchParams.set("limit", String(limit));
 	url.searchParams.set("skip", String((page - 1) * limit));
@@ -73,7 +73,7 @@ export async function getCategories(): Promise<CategoriesInterface> {
 		return cached.data as CategoriesInterface;
 	}
 
-	const url = "https://dummyjson.com/products/categories";
+	const url = `${DUMMY_URL}/products/categories`;
 
 	try {
 		const res = await fetch(url);
@@ -102,7 +102,7 @@ export async function getProductById(id: string): Promise<ProductInterface> {
 		return cached.data as ProductInterface;
 	}
 
-	const url = `https://dummyjson.com/products/${id}`;
+	const url = `${DUMMY_URL}/products/${id}`;
 
 	try {
 		const res = await fetch(url);

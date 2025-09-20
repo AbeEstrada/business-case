@@ -3,11 +3,10 @@
  */
 import { GET } from "@/app/api/product/[id]/route";
 import { getProductById } from "@/lib/cache";
+import { BASE_URL } from "@/lib/constants";
 import { NextRequest } from "next/server";
 
 jest.mock("@/lib/cache");
-
-const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 
 describe("/api/product/[id]", () => {
 	beforeEach(() => {
