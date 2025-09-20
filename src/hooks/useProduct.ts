@@ -123,7 +123,7 @@ export const getCachedProduct = (id: string): ProductInterface | null => {
 
 	const cacheEntries = Array.from(cache.entries());
 
-	for (const [_, cachedData] of cacheEntries) {
+	for (const [, cachedData] of cacheEntries) {
 		if (now - cachedData.timestamp < CACHE_DURATION) {
 			const product = cachedData.data.find(
 				(p: ProductInterface) => p.id === parseInt(id, 10),
