@@ -1,6 +1,14 @@
-import type { ProductsInterface } from "@/interfaces/Products";
+import type {
+	ProductInterface,
+	ProductsInterface,
+} from "@/interfaces/Products";
 import type { CategoriesInterface } from "@/interfaces/Category";
-import { getProducts, getCategories, __clearProductsCache } from "@/lib/cache";
+import {
+	getProducts,
+	getCategories,
+	getProductById,
+	__clearProductsCache,
+} from "@/lib/cache";
 
 const mockProductsData: ProductsInterface = {
 	products: [
@@ -35,6 +43,23 @@ const mockCategoriesData: CategoriesInterface = [
 		url: "https://dummyjson.com/products/category/fragrances",
 	},
 ];
+
+const mockProductData: ProductInterface = {
+	id: 1,
+	title: "Test Product",
+	description: "This is a test product.",
+	price: 100,
+	discountPercentage: 10,
+	rating: 4.5,
+	stock: 50,
+	brand: "TestBrand",
+	category: "TestCategory",
+	thumbnail: "https://dummyjson.com/image.jpg",
+	images: [
+		"https://dummyjson.com/image1.jpg",
+		"https://dummyjson.com/image2.jpg",
+	],
+};
 
 function createCachedFetchTest<T>({
 	fetchFn,
@@ -155,5 +180,14 @@ describe("getCategories", () => {
 		url: "https://dummyjson.com/products/categories",
 		mockData: mockCategoriesData,
 		errorMessage: "Failed to fetch categories",
+	});
+});
+
+describe("getProductById", () => {
+	createCachedFetchTest({
+		fetchFn: () => getProductById("1"),
+		url: "https://dummyjson.com/products/1",
+		mockData: mockProductData,
+		errorMessage: "Failed to fetch product",
 	});
 });

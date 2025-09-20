@@ -1,9 +1,15 @@
-import type { ProductsInterface } from "@/interfaces/Products";
+import type {
+	ProductInterface,
+	ProductsInterface,
+} from "@/interfaces/Products";
 import type { CategoriesInterface } from "@/interfaces/Category";
 
 const cache = new Map<
 	string,
-	{ data: ProductsInterface | CategoriesInterface; timestamp: number }
+	{
+		data: ProductsInterface | ProductInterface | CategoriesInterface;
+		timestamp: number;
+	}
 >();
 const CACHE_DURATION = 5 * 60 * 1000;
 
@@ -84,6 +90,35 @@ export async function getCategories(): Promise<CategoriesInterface> {
 		return data;
 	} catch (error) {
 		if (cached) return cached.data as CategoriesInterface;
+		throw error;
+	}
+}
+
+export async function getProductById(id: string): Promise<ProductInterface> {
+	const cacheKey = `product${id}`;
+
+	const cached = cache.get(cacheKey);
+	if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+		return cached.data as ProductInterface;
+	}
+
+	const url = `https://dummyjson.com/products/${id}`;
+
+	try {
+		const res = await fetch(url);
+
+		if (!res.ok) throw new Error("Failed to fetch product");
+
+		const data: ProductInterface = await res.json();
+
+		cache.set(cacheKey, {
+			data,
+			timestamp: Date.now(),
+		});
+
+		return data;
+	} catch (error) {
+		if (cached) return cached.data as ProductInterface;
 		throw error;
 	}
 }
