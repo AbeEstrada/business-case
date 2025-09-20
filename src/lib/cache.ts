@@ -1,6 +1,10 @@
 import type { ProductsInterface } from "@/interfaces/Products";
+import type { CategoriesInterface } from "@/interfaces/Category";
 
-const cache = new Map<string, { data: ProductsInterface; timestamp: number }>();
+const cache = new Map<
+	string,
+	{ data: ProductsInterface | CategoriesInterface; timestamp: number }
+>();
 const CACHE_DURATION = 5 * 60 * 1000;
 
 export async function getProducts({
@@ -22,7 +26,7 @@ export async function getProducts({
 
 	const cached = cache.get(cacheKey);
 	if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-		return cached.data;
+		return cached.data as ProductsInterface;
 	}
 
 	const endpoint = category ? `/category/${category}` : q ? "/search" : "/";
@@ -50,7 +54,36 @@ export async function getProducts({
 
 		return data;
 	} catch (error) {
-		if (cached) return cached.data;
+		if (cached) return cached.data as ProductsInterface;
+		throw error;
+	}
+}
+
+export async function getCategories(): Promise<CategoriesInterface> {
+	const cacheKey = "categories";
+
+	const cached = cache.get(cacheKey);
+	if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+		return cached.data as CategoriesInterface;
+	}
+
+	const url = "https://dummyjson.com/products/categories";
+
+	try {
+		const res = await fetch(url);
+
+		if (!res.ok) throw new Error("Failed to fetch categories");
+
+		const data: CategoriesInterface = await res.json();
+
+		cache.set(cacheKey, {
+			data,
+			timestamp: Date.now(),
+		});
+
+		return data;
+	} catch (error) {
+		if (cached) return cached.data as CategoriesInterface;
 		throw error;
 	}
 }
