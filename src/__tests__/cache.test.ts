@@ -1,7 +1,8 @@
 import type { ProductsInterface } from "@/interfaces/Products";
-import { getProducts, __clearProductsCache } from "@/lib/cache";
+import type { CategoriesInterface } from "@/interfaces/Category";
+import { getProducts, getCategories, __clearProductsCache } from "@/lib/cache";
 
-const mockData: ProductsInterface = {
+const mockProductsData: ProductsInterface = {
 	products: [
 		{
 			id: 1,
@@ -17,7 +18,35 @@ const mockData: ProductsInterface = {
 	limit: 1,
 };
 
-describe("getProducts", () => {
+const mockCategoriesData: CategoriesInterface = [
+	{
+		slug: "smartphones",
+		name: "Smartphones",
+		url: "https://dummyjson.com/products/category/smartphones",
+	},
+	{
+		slug: "laptops",
+		name: "Laptops",
+		url: "https://dummyjson.com/products/category/laptops",
+	},
+	{
+		slug: "fragrances",
+		name: "Fragrances",
+		url: "https://dummyjson.com/products/category/fragrances",
+	},
+];
+
+function createCachedFetchTest<T>({
+	fetchFn,
+	url,
+	mockData,
+	errorMessage,
+}: {
+	fetchFn: () => Promise<T>;
+	url: string;
+	mockData: T;
+	errorMessage: string;
+}) {
 	beforeEach(() => {
 		global.fetch = jest.fn();
 		__clearProductsCache();
@@ -27,15 +56,16 @@ describe("getProducts", () => {
 		jest.clearAllMocks();
 	});
 
-	it("should fetch products successfully", async () => {
+	it("should fetch data successfully", async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockData,
 		});
 
-		const result = await getProducts();
+		const result = await fetchFn();
 
 		expect(result).toEqual(mockData);
+		expect(global.fetch).toHaveBeenCalledWith(url);
 		expect(global.fetch).toHaveBeenCalledTimes(1);
 	});
 
@@ -46,7 +76,20 @@ describe("getProducts", () => {
 			statusText: "Internal Server Error",
 		});
 
-		await expect(getProducts()).rejects.toThrow("Failed to fetch products");
+		await expect(fetchFn()).rejects.toThrow(errorMessage);
+		expect(global.fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it("should return cached data when not expired", async () => {
+		(global.fetch as jest.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: async () => mockData,
+		});
+
+		const result1 = await fetchFn();
+		const result2 = await fetchFn();
+
+		expect(result2).toBe(result1);
 		expect(global.fetch).toHaveBeenCalledTimes(1);
 	});
 
@@ -56,47 +99,61 @@ describe("getProducts", () => {
 			json: async () => mockData,
 		});
 
-		await getProducts();
+		await fetchFn();
 
 		const originalNow = Date.now;
-		Date.now = jest.fn(() => originalNow() + 6 * 60 * 1000); // 6 mins later
+		Date.now = jest.fn(() => originalNow() + 6 * 60 * 1000); // 6 minutes
 
-		const freshData: ProductsInterface = {
-			products: [
-				{ id: 1, title: "Product 1" },
-				{ id: 2, title: "Product 2" },
-			],
-			total: 2,
-			skip: 0,
-			limit: 2,
-		};
+		const freshData = Array.isArray(mockData)
+			? [{ slug: "new", name: "New", url: "https://new" }]
+			: { products: [], total: 0, skip: 0, limit: 0 };
 
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
 			json: async () => freshData,
 		});
 
-		const result = await getProducts();
+		const result = await fetchFn();
 
-		expect(result).not.toEqual(mockData);
+		expect(result).toEqual(freshData);
 		expect(global.fetch).toHaveBeenCalledTimes(2);
-		expect(result.products?.length).toBe(2);
 
 		Date.now = originalNow;
 	});
 
-	it("should return cached data when available and not expired", async () => {
+	it("should return cached data on fetch failure if cache exists", async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockData,
 		});
 
-		const result1 = await getProducts();
+		const result1 = await fetchFn();
+		expect(result1).toEqual(mockData);
 
-		const result2 = await getProducts();
+		(global.fetch as jest.Mock).mockResolvedValueOnce({
+			ok: false,
+			status: 500,
+		});
 
+		const result2 = await fetchFn();
 		expect(result2).toEqual(mockData);
-		expect(global.fetch).toHaveBeenCalledTimes(1);
-		expect(result2).toBe(result1);
+	});
+}
+
+describe("getProducts", () => {
+	createCachedFetchTest({
+		fetchFn: getProducts,
+		url: "https://dummyjson.com/products/?limit=30&skip=0",
+		mockData: mockProductsData,
+		errorMessage: "Failed to fetch products",
+	});
+});
+
+describe("getCategories", () => {
+	createCachedFetchTest({
+		fetchFn: getCategories,
+		url: "https://dummyjson.com/products/categories",
+		mockData: mockCategoriesData,
+		errorMessage: "Failed to fetch categories",
 	});
 });
