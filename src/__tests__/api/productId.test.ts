@@ -64,6 +64,6 @@ describe("/api/product/[id]", () => {
 		const json = await response.json();
 
 		expect(response.status).toBe(500);
-		expect(json).toHaveProperty("error", "Internal Server Error");
+		expect(json).toHaveProperty("error", "Network failure");
 	});
 });
