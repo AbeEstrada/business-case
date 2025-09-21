@@ -13,6 +13,7 @@ interface UseProductsParams {
 	page?: string | null;
 	sort?: string | null;
 	order?: string | null;
+	limit?: string | null;
 	delay?: string | null;
 }
 
@@ -22,6 +23,7 @@ export const useProducts = ({
 	page,
 	sort,
 	order,
+	limit,
 	delay,
 }: UseProductsParams) => {
 	const [products, setProducts] = useState<ProductInterface[]>([]);
@@ -53,21 +55,17 @@ export const useProducts = ({
 				if (sort) params.append("sort", sort);
 				if (order) params.append("order", order);
 				if (delay) params.append("delay", delay);
+				if (page && parseInt(page, 10) > 0) params.append("page", page);
+				if (limit && parseInt(limit, 10) > 0) params.append("limit", limit);
 
 				const hasSearchParams = Boolean(q || category || sort || order);
+				const hasBasicParams = Boolean(page || limit);
 
-				let url: string;
-
-				if (hasSearchParams) {
-					if (page && parseInt(page, 10) > 0) {
-						params.append("page", page);
-					}
-					url = `/api/products/search?${params.toString()}`;
-				} else if (page && parseInt(page, 10) > 0) {
-					url = `/api/products?page=${page}`;
-				} else {
-					url = "/api/products";
-				}
+				const url = hasSearchParams
+					? `/api/products/search?${params.toString()}`
+					: hasBasicParams
+						? `/api/products?${params.toString()}`
+						: "/api/products";
 
 				if (delay) {
 					const delayMs = parseInt(delay, 10);
@@ -112,7 +110,7 @@ export const useProducts = ({
 				setLoading(false);
 			}
 		},
-		[cacheKey, q, category, page, sort, order, delay],
+		[cacheKey, q, category, page, sort, order, limit, delay],
 	);
 
 	useEffect(() => {

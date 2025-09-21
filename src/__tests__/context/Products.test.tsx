@@ -57,6 +57,7 @@ describe("ProductsContext", () => {
 			page: "1",
 			sort: "price",
 			order: "asc",
+			limit: "10",
 			delay: "100",
 		});
 		mockUseSearchParams.mockReturnValue(searchParams);
@@ -76,6 +77,7 @@ describe("ProductsContext", () => {
 			page: "1",
 			sort: "price",
 			order: "asc",
+			limit: "10",
 			delay: "100",
 		});
 	});

@@ -25,6 +25,7 @@ export const ProductsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const page = searchParams.get("page");
 	const sort = searchParams.get("sort");
 	const order = searchParams.get("order");
+	const limit = searchParams.get("limit");
 	const delay = searchParams.get("delay");
 
 	const { products, loading, error, hasLoaded } = useProducts({
@@ -33,6 +34,7 @@ export const ProductsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 		page,
 		sort,
 		order,
+		limit,
 		delay,
 	});
 

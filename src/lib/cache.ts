@@ -19,7 +19,7 @@ export async function getProducts({
 	sort,
 	order,
 	page = 1,
-	limit = 30,
+	limit = 10,
 }: {
 	q?: string;
 	category?: string;
