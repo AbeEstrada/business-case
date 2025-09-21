@@ -11,6 +11,26 @@ const config: Config = {
 	moduleNameMapper: {
 		"^@/(.*)$": "<rootDir>/src/$1",
 	},
+	collectCoverage: true,
+	collectCoverageFrom: [
+		"**/*.{js,jsx,ts,tsx}",
+		"!**/*.d.ts",
+		"!**/.next/**",
+		"!**/node_modules/**",
+		"!**/coverage/**",
+		"!**/interfaces/**",
+		"!jest.config.ts",
+		"!next.config.mjs",
+		"!tailwind.config.ts",
+	],
+	coverageThreshold: {
+		global: {
+			branches: 80,
+			functions: 80,
+			lines: 80,
+			statements: 80,
+		},
+	},
 };
 
 export default createJestConfig(config);
