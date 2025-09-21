@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
 	try {
 		const pageNumber = page ? parseInt(page, 10) : 1;
-		const limitNumber = limit ? parseInt(limit, 10) : 30;
+		const limitNumber = limit ? parseInt(limit, 10) : 10;
 
 		if (Number.isNaN(pageNumber) || pageNumber < 1) {
 			return Response.json(

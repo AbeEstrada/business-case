@@ -79,7 +79,7 @@ function createCachedFetchTest<T>({
 		jest.clearAllMocks();
 	});
 
-	it("should fetch data successfully", async () => {
+	it("should fetch default data successfully", async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
 			json: async () => mockData,
@@ -166,7 +166,7 @@ function createCachedFetchTest<T>({
 describe("getProducts", () => {
 	createCachedFetchTest({
 		fetchFn: getProducts,
-		url: `${DUMMY_URL}/products/?limit=30&skip=0`,
+		url: `${DUMMY_URL}/products/?limit=10&skip=0`,
 		mockData: mockProductsData,
 		errorMessage: "Failed to fetch products",
 	});
