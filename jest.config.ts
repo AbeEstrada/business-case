@@ -11,7 +11,6 @@ const config: Config = {
 	moduleNameMapper: {
 		"^@/(.*)$": "<rootDir>/src/$1",
 	},
-	collectCoverage: true,
 	collectCoverageFrom: [
 		"**/*.{js,jsx,ts,tsx}",
 		"!**/*.d.ts",
