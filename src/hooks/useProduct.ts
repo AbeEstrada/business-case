@@ -27,7 +27,7 @@ export const useProducts = ({
 	const [products, setProducts] = useState<ProductInterface[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
-	const [hasLoaded, setHasLoaded] = useState<boolean>(false); // New state variable
+	const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
 	const cacheKey = JSON.stringify({ q, category, page, sort, order });
 
@@ -50,15 +50,24 @@ export const useProducts = ({
 				const params = new URLSearchParams();
 				if (q) params.append("q", q);
 				if (category) params.append("category", category);
-				if (page) params.append("page", page);
 				if (sort) params.append("sort", sort);
 				if (order) params.append("order", order);
 				if (delay) params.append("delay", delay);
 
-				const url =
-					q || category || page || sort || order
-						? `/api/products/search?${params.toString()}`
-						: "/api/products";
+				const hasSearchParams = Boolean(q || category || sort || order);
+
+				let url: string;
+
+				if (hasSearchParams) {
+					if (page && parseInt(page, 10) > 0) {
+						params.append("page", page);
+					}
+					url = `/api/products/search?${params.toString()}`;
+				} else if (page && parseInt(page, 10) > 0) {
+					url = `/api/products?page=${page}`;
+				} else {
+					url = "/api/products";
+				}
 
 				if (delay) {
 					const delayMs = parseInt(delay, 10);
