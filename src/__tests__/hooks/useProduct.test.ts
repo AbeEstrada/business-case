@@ -113,6 +113,8 @@ describe("useProducts", () => {
 	});
 
 	it("should apply a delay before fetching data if 'delay' parameter is provided", async () => {
+		jest.useFakeTimers();
+
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
 			json: jest.fn().mockResolvedValueOnce(mockData),
@@ -130,6 +132,8 @@ describe("useProducts", () => {
 		});
 
 		expect(fetch).toHaveBeenCalledTimes(1);
+
+		jest.useRealTimers();
 	});
 
 	it("should return a specific product from cache when available", () => {
