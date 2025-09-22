@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Pagination from "@/components/Pagination";
+import { Pagination } from "@/components/Pagination";
 import { useProductsContext } from "@/context/Products";
 import { useSearchParams } from "next/navigation";
 

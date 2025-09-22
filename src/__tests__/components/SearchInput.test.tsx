@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import SearchInput from "@/components/SearchInput";
+import { SearchInput } from "@/components/SearchInput";
 
 const mockRouterPush = jest.fn();
 const mockSearchGet = jest.fn();

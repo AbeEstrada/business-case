@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import ProductsList from "@/components/ProductsList";
+import { ProductsList } from "@/components/ProductsList";
 import { ProductsProvider } from "@/context/Products";
-import SearchInput from "@/components/SearchInput";
+import { SearchInput } from "@/components/SearchInput";
 import { CategorySelect } from "@/components/CategoriesSelect";
 import { SortSelect } from "@/components/SortSelect";
 import { OrderSelect } from "@/components/OrderSelect";
-import Pagination from "@/components/Pagination";
+import { Pagination } from "@/components/Pagination";
 
 export default function Home() {
 	return (

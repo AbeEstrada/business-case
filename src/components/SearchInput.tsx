@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 
-const SearchInput: FC = () => {
+export const SearchInput: FC = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -54,5 +54,3 @@ const SearchInput: FC = () => {
 		</search>
 	);
 };
-
-export default SearchInput;

@@ -4,7 +4,7 @@ import type { FC } from "react";
 import { useProductsContext } from "@/context/Products";
 import ProductCard from "./ProductCard";
 
-const ProductsList: FC = () => {
+export const ProductsList: FC = () => {
 	const { data, loading, error, hasLoaded } = useProductsContext();
 	if (error) {
 		return <p className="m-4 text-red-500">Error: {error}</p>;
@@ -36,5 +36,3 @@ const ProductsList: FC = () => {
 		</section>
 	);
 };
-
-export default ProductsList;

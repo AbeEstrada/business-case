@@ -11,13 +11,13 @@ jest.mock("@/context/Products", () => ({
 jest.mock("@/components/ProductsList", () => {
 	const ProductsList = () => <div data-testid="products-list-mock" />;
 	ProductsList.displayName = "ProductsList";
-	return ProductsList;
+	return { ProductsList };
 });
 
 jest.mock("@/components/SearchInput", () => {
 	const SearchInput = () => <div data-testid="search-input-mock" />;
 	SearchInput.displayName = "SearchInput";
-	return SearchInput;
+	return { SearchInput };
 });
 
 jest.mock("@/components/CategoriesSelect", () => {
@@ -41,7 +41,7 @@ jest.mock("@/components/OrderSelect", () => {
 jest.mock("@/components/Pagination", () => {
 	const Pagination = () => <div data-testid="pagination-mock" />;
 	Pagination.displayName = "Pagination";
-	return Pagination;
+	return { Pagination };
 });
 
 describe("Home Page", () => {

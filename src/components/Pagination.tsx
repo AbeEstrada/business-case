@@ -5,7 +5,7 @@ import { useProductsContext } from "@/context/Products";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-const Pagination: FC = () => {
+export const Pagination: FC = () => {
 	const { data, loading, error, hasLoaded } = useProductsContext();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -94,5 +94,3 @@ const Pagination: FC = () => {
 		</nav>
 	);
 };
-
-export default Pagination;

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ProductsList from "@/components/ProductsList";
+import { ProductsList } from "@/components/ProductsList";
 import { useProductsContext } from "@/context/Products";
 import type { ProductsInterface } from "@/interfaces/Products";
 
