@@ -31,7 +31,7 @@ export const useProducts = ({
 	const [error, setError] = useState<string | null>(null);
 	const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
-	const cacheKey = JSON.stringify({ q, category, page, sort, order });
+	const cacheKey = JSON.stringify({ q, category, page, sort, order, limit });
 
 	const fetchProducts = useCallback(
 		async (signal: AbortSignal, retries = 3) => {
