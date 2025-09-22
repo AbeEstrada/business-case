@@ -3,28 +3,45 @@ import "@testing-library/jest-dom";
 import Home from "@/app/page";
 
 jest.mock("@/context/Products", () => ({
-	ProductsProvider: ({ children }: { children: React.ReactNode }) => (
-		<div data-testid="products-provider-mock">{children}</div>
-	),
+	ProductsProvider: ({ children }: { children: React.ReactNode }) => {
+		return <div data-testid="products-provider-mock">{children}</div>;
+	},
 }));
 
 jest.mock("@/components/ProductsList", () => {
-	return () => <div data-testid="products-list-mock" />;
+	const ProductsList = () => <div data-testid="products-list-mock" />;
+	ProductsList.displayName = "ProductsList";
+	return ProductsList;
 });
+
 jest.mock("@/components/SearchInput", () => {
-	return () => <div data-testid="search-input-mock" />;
+	const SearchInput = () => <div data-testid="search-input-mock" />;
+	SearchInput.displayName = "SearchInput";
+	return SearchInput;
 });
-jest.mock("@/components/CategoriesSelect", () => ({
-	CategorySelect: () => <div data-testid="category-select-mock" />,
-}));
-jest.mock("@/components/SortSelect", () => ({
-	SortSelect: () => <div data-testid="sort-select-mock" />,
-}));
-jest.mock("@/components/OrderSelect", () => ({
-	OrderSelect: () => <div data-testid="order-select-mock" />,
-}));
+
+jest.mock("@/components/CategoriesSelect", () => {
+	const CategorySelect = () => <div data-testid="category-select-mock" />;
+	CategorySelect.displayName = "CategorySelect";
+	return { CategorySelect };
+});
+
+jest.mock("@/components/SortSelect", () => {
+	const SortSelect = () => <div data-testid="sort-select-mock" />;
+	SortSelect.displayName = "SortSelect";
+	return { SortSelect };
+});
+
+jest.mock("@/components/OrderSelect", () => {
+	const OrderSelect = () => <div data-testid="order-select-mock" />;
+	OrderSelect.displayName = "OrderSelect";
+	return { OrderSelect };
+});
+
 jest.mock("@/components/Pagination", () => {
-	return () => <div data-testid="pagination-mock" />;
+	const Pagination = () => <div data-testid="pagination-mock" />;
+	Pagination.displayName = "Pagination";
+	return Pagination;
 });
 
 describe("Home Page", () => {
