@@ -14,6 +14,31 @@ Frontend → Components → User
 
 ---
 
+## Quick Setup
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- Bun (recommended)
+
+```
+git clone https://github.com/AbeEstrada/business-case.git
+cd business-case
+
+# Install dependencies
+bun/npm install
+
+# Start development server
+bun/npm run dev
+```
+
+### Need Bun?
+
+```
+# Install Bun (if not installed)
+curl -fsSL https://bun.sh/install | bash
+```
+
 ## Frontend
 
 The frontend is built with a clear separation of concerns, using custom hooks to handle data fetching and components to render the user interface. It manages application state directly through URL query parameters.
