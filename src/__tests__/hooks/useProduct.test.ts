@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook, waitFor, act } from "@testing-library/react";
 import { useProducts, getCachedProduct, cache } from "@/hooks/useProduct";
 import type { ProductsInterface } from "@/interfaces/Products";
 
@@ -81,7 +81,6 @@ describe("useProducts", () => {
 		expect(result.current.loading).toBe(false);
 		expect(result.current.data).toBe(undefined);
 		expect(result.current.error).toBe("Failed to fetch products.");
-
 		expect(fetch).toHaveBeenCalledTimes(4);
 
 		consoleSpy.mockRestore();
@@ -125,10 +124,13 @@ describe("useProducts", () => {
 		expect(result.current.loading).toBe(true);
 		expect(fetch).not.toHaveBeenCalled();
 
-		await jest.advanceTimersByTimeAsync(500);
+		await act(async () => {
+			await jest.advanceTimersByTimeAsync(500);
+		});
 
 		await waitFor(() => {
 			expect(result.current.loading).toBe(false);
+			expect(result.current.data).toEqual(mockData);
 		});
 
 		expect(fetch).toHaveBeenCalledTimes(1);
