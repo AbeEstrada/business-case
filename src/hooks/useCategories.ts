@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import type { CategoryInterface } from "@/interfaces/Category";
 import { CACHE_DURATION } from "@/lib/constants";
 
+// Export for tests
 export const cache = new Map<
 	string,
 	{ data: CategoryInterface[]; timestamp: number }

@@ -29,13 +29,18 @@ const Pagination: FC = () => {
 		const ellipsis = "...";
 
 		if (lastPage <= maxPagesToShow) {
+			// Total pages fit, show all page numbers
 			pages = pageNumbers;
 		} else {
 			if (currentPage <= 3) {
+				// Current page is near beggining and include last page
 				pages = [...pageNumbers.slice(0, 4), ellipsis, lastPage];
 			} else if (currentPage > lastPage - 3) {
+				// Current page is near end, include first page
 				pages = [1, ellipsis, ...pageNumbers.slice(lastPage - 4, lastPage)];
 			} else {
+				// Current page is in the middle, show first and last page
+				// include page before and after current page
 				pages = [
 					1,
 					ellipsis,

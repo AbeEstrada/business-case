@@ -5,6 +5,7 @@ import type {
 } from "@/interfaces/Products";
 import { CACHE_DURATION } from "@/lib/constants";
 
+// Export for tests
 export const cache = new Map<
 	string,
 	{ data: ProductsInterface; timestamp: number }
@@ -131,6 +132,7 @@ export const getCachedProduct = (id: string): ProductInterface | null => {
 
 	const cacheEntries = Array.from(cache.entries());
 
+	// Retrieve product from the cached products array
 	for (const [, cachedData] of cacheEntries) {
 		if (now - cachedData.timestamp < CACHE_DURATION) {
 			const product = cachedData.data.products?.find(
@@ -142,5 +144,6 @@ export const getCachedProduct = (id: string): ProductInterface | null => {
 		}
 	}
 
+	// Force an api call
 	return null;
 };

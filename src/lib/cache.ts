@@ -35,6 +35,7 @@ export async function getProducts({
 		return cached.data as ProductsInterface;
 	}
 
+	// Select if there is a search or retrieve all the category
 	const endpoint =
 		category && !q ? `/category/${category}` : q ? "/search" : "/";
 	const url = new URL(`${DUMMY_URL}/products${endpoint}`);
@@ -54,6 +55,8 @@ export async function getProducts({
 
 		const data: ProductsInterface = await res.json();
 
+		// Filter products only if there is a query and category parameters
+		// if not, return all the products in the category
 		if (category && data.products && !endpoint.includes("/category/")) {
 			const filteredProducts = data.products.filter(
 				(product) => product.category?.toLowerCase() === category.toLowerCase(),
@@ -136,6 +139,7 @@ export async function getProductById(id: string): Promise<ProductInterface> {
 	}
 }
 
+// Export for tests
 export function __clearProductsCache() {
 	cache.clear();
 }
