@@ -4,6 +4,10 @@ import RootLayout, { metadata } from "@/app/layout";
 
 describe("RootLayout", () => {
 	it("should render children inside the body tag", () => {
+		const consoleSpy = jest
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+
 		render(
 			<RootLayout>
 				<main>
@@ -15,6 +19,8 @@ describe("RootLayout", () => {
 		const childElement = screen.getByText("Test");
 
 		expect(childElement).toBeInTheDocument();
+
+		consoleSpy.mockRestore();
 	});
 });
 

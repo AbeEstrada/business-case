@@ -34,6 +34,10 @@ describe("SearchInput", () => {
 	});
 
 	it("renders the input with the correct initial value from URL", () => {
+		const consoleSpy = jest
+			.spyOn(console, "error")
+			.mockImplementation(() => {});
+
 		mockSearchGet.mockReturnValue("initial query");
 
 		render(<SearchInput />);
@@ -41,6 +45,8 @@ describe("SearchInput", () => {
 		const inputElement = screen.getByRole("searchbox");
 		expect(inputElement).toBeInTheDocument();
 		expect(inputElement).toHaveValue("initial query");
+
+		consoleSpy.mockRestore();
 	});
 
 	it("updates the URL after the debounce period when a user types", () => {

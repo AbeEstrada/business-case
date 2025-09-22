@@ -79,12 +79,18 @@ describe("Product Page", () => {
 		});
 
 		it("should render an error message when data fetching throws an error", async () => {
+			const consoleSpy = jest
+				.spyOn(console, "error")
+				.mockImplementation(() => {});
+
 			mockedGetProductById.mockRejectedValue(new Error("Failed to fetch"));
 
 			const Page = await ProductPage({ params });
 			render(Page);
 
 			expect(screen.getByText("Product not available.")).toBeInTheDocument();
+
+			consoleSpy.mockRestore();
 		});
 	});
 });

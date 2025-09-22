@@ -63,6 +63,8 @@ describe("ProductClient", () => {
 	});
 
 	it("should fall back to props if the search parameter is invalid JSON", () => {
+		const consoleSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+
 		mockUseSearchParams.mockReturnValue(
 			new URLSearchParams({ product: "invalid-json" }),
 		);
@@ -71,6 +73,8 @@ describe("ProductClient", () => {
 
 		expect(screen.getByText(/Title: Test Product/i)).toBeInTheDocument();
 		expect(screen.getByText("Price: $1,000.00")).toBeInTheDocument();
+
+		consoleSpy.mockRestore();
 	});
 
 	it("should render the correct number of product images", () => {
