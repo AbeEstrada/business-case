@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { useProducts, cache } from "@/hooks/useProduct";
+import { useProducts, getCachedProduct, cache } from "@/hooks/useProduct";
 import type { ProductsInterface } from "@/interfaces/Products";
 
 const mockData: ProductsInterface = {
@@ -110,5 +110,85 @@ describe("useProducts", () => {
 		});
 
 		expect(fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it("should apply a delay before fetching data if 'delay' parameter is provided", async () => {
+		(global.fetch as jest.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: jest.fn().mockResolvedValueOnce(mockData),
+		});
+
+		const { result } = renderHook(() => useProducts({ delay: "500" }));
+
+		expect(result.current.loading).toBe(true);
+		expect(fetch).not.toHaveBeenCalled();
+
+		await jest.advanceTimersByTimeAsync(500);
+
+		await waitFor(() => {
+			expect(result.current.loading).toBe(false);
+		});
+
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it("should return a specific product from cache when available", () => {
+		const cachedData = {
+			timestamp: Date.now(),
+			data: {
+				products: [
+					{ id: 1, title: "Product 1", price: 100 },
+					{ id: 2, title: "Product 2", price: 50 },
+				],
+				total: 2,
+				skip: 0,
+				limit: 10,
+			},
+		};
+		cache.set("/api/products", cachedData);
+
+		const product = getCachedProduct("2");
+		expect(product).toEqual({ id: 2, title: "Product 2", price: 50 });
+	});
+
+	it("should return null if the product is not found in the cache", () => {
+		const cachedData = {
+			timestamp: Date.now(),
+			data: {
+				products: [
+					{ id: 1, title: "Product 1", price: 100 },
+					{ id: 2, title: "Product 2", price: 50 },
+				],
+				total: 2,
+				skip: 0,
+				limit: 10,
+			},
+		};
+		cache.set("/api/products", cachedData);
+
+		const product = getCachedProduct("99");
+		expect(product).toBeNull();
+	});
+
+	it("should return null if the cache has expired", () => {
+		const expiredTimestamp = Date.now() - 60 * 60 * 1000 - 1;
+		const cachedData = {
+			timestamp: expiredTimestamp,
+			data: {
+				products: [{ id: 1, title: "Product 1", price: 100 }],
+				total: 1,
+				skip: 0,
+				limit: 10,
+			},
+		};
+		cache.set("/api/products", cachedData);
+
+		const product = getCachedProduct("1");
+		expect(product).toBeNull();
+	});
+
+	it("should return null if cache is empty", () => {
+		const product = getCachedProduct("1");
+		expect(product).toBeNull();
 	});
 });
