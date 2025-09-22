@@ -1,10 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
-import type { ProductInterface } from "@/interfaces/Products";
+import type {
+	ProductsInterface,
+	ProductInterface,
+} from "@/interfaces/Products";
 import { CACHE_DURATION } from "@/lib/constants";
 
 export const cache = new Map<
 	string,
-	{ data: ProductInterface[]; timestamp: number }
+	{ data: ProductsInterface; timestamp: number }
 >();
 
 interface UseProductsParams {
@@ -26,7 +29,7 @@ export const useProducts = ({
 	limit,
 	delay,
 }: UseProductsParams) => {
-	const [products, setProducts] = useState<ProductInterface[]>([]);
+	const [data, setData] = useState<ProductsInterface | undefined>(undefined);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 	const [hasLoaded, setHasLoaded] = useState<boolean>(false);
@@ -39,7 +42,7 @@ export const useProducts = ({
 			const cachedData = cache.get(cacheKey);
 
 			if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
-				setProducts(cachedData.data);
+				setData(cachedData.data);
 				setLoading(false);
 				setHasLoaded(true);
 				return;
@@ -84,10 +87,9 @@ export const useProducts = ({
 				}
 
 				const json = await response.json();
-				const productData = json?.products ?? [];
-				cache.set(cacheKey, { data: productData, timestamp: now });
+				cache.set(cacheKey, { data: json, timestamp: now });
 
-				setProducts(productData);
+				setData(json);
 				setHasLoaded(true);
 			} catch (err) {
 				if (signal.aborted) {
@@ -103,7 +105,6 @@ export const useProducts = ({
 					setError(
 						err instanceof Error ? err.message : "An unknown error occurred.",
 					);
-					setProducts([]);
 					setHasLoaded(true);
 				}
 			} finally {
@@ -122,7 +123,7 @@ export const useProducts = ({
 		};
 	}, [fetchProducts]);
 
-	return { products, loading, error, hasLoaded };
+	return { data, loading, error, hasLoaded };
 };
 
 export const getCachedProduct = (id: string): ProductInterface | null => {
@@ -132,7 +133,7 @@ export const getCachedProduct = (id: string): ProductInterface | null => {
 
 	for (const [, cachedData] of cacheEntries) {
 		if (now - cachedData.timestamp < CACHE_DURATION) {
-			const product = cachedData.data.find(
+			const product = cachedData.data.products?.find(
 				(p: ProductInterface) => p.id === parseInt(id, 10),
 			);
 			if (product) {

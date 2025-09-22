@@ -15,7 +15,12 @@ describe("ProductsContext", () => {
 		typeof useProducts
 	>;
 
-	const mockProducts = [{ id: 1, title: "Product 1" }];
+	const mockData = {
+		products: [{ id: 1, title: "Product 1" }],
+		total: 1,
+		skip: 0,
+		limit: 10,
+	};
 
 	const createMockSearchParams = (
 		params: Record<string, string> = {},
@@ -43,7 +48,7 @@ describe("ProductsContext", () => {
 		jest.clearAllMocks();
 
 		mockUseProducts.mockReturnValue({
-			products: mockProducts,
+			data: mockData,
 			loading: false,
 			error: null,
 			hasLoaded: true,
@@ -66,7 +71,7 @@ describe("ProductsContext", () => {
 			wrapper: ProductsProvider,
 		});
 
-		expect(result.current.products).toEqual(mockProducts);
+		expect(result.current.data).toEqual(mockData);
 		expect(result.current.loading).toBe(false);
 		expect(result.current.error).toBe(null);
 		expect(result.current.hasLoaded).toBe(true);

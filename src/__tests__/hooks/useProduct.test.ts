@@ -1,11 +1,16 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useProducts, cache } from "@/hooks/useProduct";
-import type { ProductInterface } from "@/interfaces/Products";
+import type { ProductsInterface } from "@/interfaces/Products";
 
-const mockProducts: ProductInterface[] = [
-	{ id: 1, title: "Product 1", price: 100 },
-	{ id: 2, title: "Product 2", price: 50 },
-];
+const mockData: ProductsInterface = {
+	products: [
+		{ id: 1, title: "Product 1", price: 100 },
+		{ id: 2, title: "Product 2", price: 50 },
+	],
+	total: 1,
+	skip: 0,
+	limit: 10,
+};
 
 beforeAll(() => {
 	global.fetch = jest.fn();
@@ -20,14 +25,14 @@ describe("useProducts", () => {
 	it("should fetch products successfully without any parameters", async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
-			json: jest.fn().mockResolvedValueOnce({ products: mockProducts }),
+			json: jest.fn().mockResolvedValueOnce(mockData),
 		});
 
 		const { result } = renderHook(() => useProducts({}));
 
 		await waitFor(() => {
 			expect(result.current.loading).toBe(false);
-			expect(result.current.products).toEqual(mockProducts);
+			expect(result.current.data).toEqual(mockData);
 			expect(result.current.error).toBeNull();
 			expect(result.current.hasLoaded).toBe(true);
 		});
@@ -39,7 +44,7 @@ describe("useProducts", () => {
 	it("should build the correct search URL when parameters are provided", async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
-			json: jest.fn().mockResolvedValueOnce({ products: mockProducts }),
+			json: jest.fn().mockResolvedValueOnce(mockData),
 		});
 
 		const { result } = renderHook(() =>
@@ -74,7 +79,7 @@ describe("useProducts", () => {
 		);
 
 		expect(result.current.loading).toBe(false);
-		expect(result.current.products).toEqual([]);
+		expect(result.current.data).toBe(undefined);
 		expect(result.current.error).toBe("Failed to fetch products.");
 
 		expect(fetch).toHaveBeenCalledTimes(4);
@@ -85,7 +90,7 @@ describe("useProducts", () => {
 	it("should return cached data when called again with the same parameters", async () => {
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: true,
-			json: jest.fn().mockResolvedValueOnce({ products: mockProducts }),
+			json: jest.fn().mockResolvedValueOnce(mockData),
 		});
 
 		const params = { q: "test" };
@@ -101,7 +106,7 @@ describe("useProducts", () => {
 
 		await waitFor(() => {
 			expect(secondRender.current.loading).toBe(false);
-			expect(secondRender.current.products).toEqual(mockProducts);
+			expect(secondRender.current.data).toEqual(mockData);
 		});
 
 		expect(fetch).toHaveBeenCalledTimes(1);

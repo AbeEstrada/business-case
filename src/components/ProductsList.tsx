@@ -5,7 +5,7 @@ import { useProductsContext } from "@/context/Products";
 import ProductCard from "./ProductCard";
 
 const ProductsList: FC = () => {
-	const { products, loading, error, hasLoaded } = useProductsContext();
+	const { data, loading, error, hasLoaded } = useProductsContext();
 	if (error) {
 		return <p className="m-4 text-red-500">Error: {error}</p>;
 	}
@@ -20,7 +20,7 @@ const ProductsList: FC = () => {
 		);
 	}
 
-	if (products.length === 0) {
+	if (data.products?.length === 0) {
 		return (
 			<section className="m-4">
 				<p>No products found.</p>
@@ -30,7 +30,7 @@ const ProductsList: FC = () => {
 
 	return (
 		<section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 m-4">
-			{products.map((product) => (
+			{data.products?.map((product) => (
 				<ProductCard key={product.id} product={product} />
 			))}
 		</section>

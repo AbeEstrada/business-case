@@ -4,11 +4,11 @@ import type { FC, ReactNode } from "react";
 import { createContext, useContext } from "react";
 import { useSearchParams } from "next/navigation";
 
-import type { ProductInterface } from "@/interfaces/Products";
+import type { ProductsInterface } from "@/interfaces/Products";
 import { useProducts } from "@/hooks/useProduct";
 
 interface ProductsContextType {
-	products: ProductInterface[];
+	data: ProductsInterface;
 	loading: boolean;
 	error: string | null;
 	hasLoaded: boolean;
@@ -28,7 +28,7 @@ export const ProductsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const limit = searchParams.get("limit");
 	const delay = searchParams.get("delay");
 
-	const { products, loading, error, hasLoaded } = useProducts({
+	const { data, loading, error, hasLoaded } = useProducts({
 		q,
 		category,
 		page,
@@ -39,7 +39,7 @@ export const ProductsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	});
 
 	const value: ProductsContextType = {
-		products,
+		data: data ?? ({} as ProductsInterface),
 		loading,
 		error,
 		hasLoaded,
