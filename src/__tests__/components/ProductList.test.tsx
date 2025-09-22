@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ProductsList from "@/components/ProductsList";
 import { useProductsContext } from "@/context/Products";
+import type { ProductsInterface } from "@/interfaces/Products";
 
 jest.mock("@/components/ProductCard", () => {
 	const Card = ({ product }: { product?: { title: string } }) => (
@@ -22,7 +23,7 @@ describe("ProductsList", () => {
 		(useProductsContext as jest.Mock).mockReturnValue({
 			loading: true,
 			hasLoaded: false,
-			products: [],
+			data: {} as ProductsInterface,
 			error: null,
 		});
 
@@ -37,7 +38,7 @@ describe("ProductsList", () => {
 		(useProductsContext as jest.Mock).mockReturnValue({
 			loading: false,
 			hasLoaded: true,
-			products: [],
+			data: {} as ProductsInterface,
 			error: errorMessage,
 		});
 
@@ -50,7 +51,12 @@ describe("ProductsList", () => {
 		(useProductsContext as jest.Mock).mockReturnValue({
 			loading: false,
 			hasLoaded: true,
-			products: [],
+			data: {
+				products: [],
+				total: 0,
+				skip: 0,
+				limit: 10,
+			} as ProductsInterface,
 			error: null,
 		});
 
@@ -60,14 +66,19 @@ describe("ProductsList", () => {
 	});
 
 	it("renders the list of products when data is available", () => {
-		const mockProducts = [
-			{ id: 1, title: "Test" },
-			{ id: 2, title: "Product" },
-		];
+		const mockData = {
+			products: [
+				{ id: 1, title: "Test" },
+				{ id: 2, title: "Product" },
+			],
+			total: 1,
+			skip: 0,
+			limit: 10,
+		};
 		(useProductsContext as jest.Mock).mockReturnValue({
 			loading: false,
 			hasLoaded: true,
-			products: mockProducts,
+			data: mockData,
 			error: null,
 		});
 
