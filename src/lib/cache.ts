@@ -35,7 +35,8 @@ export async function getProducts({
 		return cached.data as ProductsInterface;
 	}
 
-	const endpoint = category ? `/category/${category}` : q ? "/search" : "/";
+	const endpoint =
+		category && !q ? `/category/${category}` : q ? "/search" : "/";
 	const url = new URL(`${DUMMY_URL}/products${endpoint}`);
 
 	url.searchParams.set("limit", String(limit));
@@ -52,6 +53,18 @@ export async function getProducts({
 		if (!res.ok) throw new Error("Failed to fetch products");
 
 		const data: ProductsInterface = await res.json();
+
+		if (category && data.products && !endpoint.includes("/category/")) {
+			const filteredProducts = data.products.filter(
+				(product) => product.category?.toLowerCase() === category.toLowerCase(),
+			);
+
+			data.products = filteredProducts;
+			data.total = filteredProducts.length;
+
+			data.skip = (page - 1) * limit;
+			data.limit = limit;
+		}
 
 		cache.set(cacheKey, {
 			data,
