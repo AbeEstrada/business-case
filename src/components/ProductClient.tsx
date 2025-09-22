@@ -27,6 +27,7 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 		}
 	}
 
+	// Prevents mismatch data between server and client
 	const [chartData, setChartData] = useState<number[]>([]);
 	useEffect(() => {
 		const generatedData = Array.from({ length: 6 }, () => {
