@@ -59,28 +59,30 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 					<h1 className="text-2xl">{finalProduct.title}</h1>
 					<div className="text-xl font-semibold">{localPrice}</div>
 					<div className="flex gap-x-2">
-						<cite className="not-italic text-sm font-bold rounded rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">
+						<cite className="not-italic text-sm font-bold rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">
 							{finalProduct.brand}
 						</cite>
-						<cite className="not-italic text-sm rounded rounded-lg py-1 px-2 bg-zinc-700">
+						<cite className="not-italic text-sm rounded-lg py-1 px-2 bg-zinc-700 text-zinc-200 dark:text-zinc-900">
 							{finalProduct.category}
 						</cite>
 						<cite>
 							{ratingStars.map((s, i) => (
-								<span key={i}>{s}</span>
+								<span key={i} className="text-yellow-400 dark:bg-yellow-600">
+									{s}
+								</span>
 							))}
 						</cite>
 					</div>
 					<p className="mt-4">{finalProduct.description}</p>
 					<p>
-						Stock: {finalProduct.stock} units ({finalProduct.availabilityStatus}
-						)
+						{finalProduct.stock} units ({finalProduct.availabilityStatus})
 					</p>
 				</div>
 			</section>
 			{chartData ? (
-				<div className="md:w-1/3 my-4">
-					<BarChart data={chartData} title="Weekly Price Trends" />{" "}
+				<div className="md:w-1/3 my-4 mx-auto">
+					<BarChart data={chartData} title="Weekly Price Trends" />
+					<p className="text-center text-sm m-1">Historical Prices</p>
 				</div>
 			) : null}
 		</main>

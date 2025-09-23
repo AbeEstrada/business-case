@@ -112,6 +112,6 @@ describe("ProductClient", () => {
 		};
 		render(<ProductClient product={productWithStock} />);
 
-		expect(screen.getByText("Stock: 50 units (In Stock)")).toBeInTheDocument();
+		expect(screen.getByText("50 units (In Stock)")).toBeInTheDocument();
 	});
 });
