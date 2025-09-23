@@ -62,12 +62,12 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 						<cite className="not-italic text-sm font-bold rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">
 							{finalProduct.brand}
 						</cite>
-						<cite className="not-italic text-sm rounded-lg py-1 px-2 bg-zinc-700 text-zinc-200 dark:text-zinc-900">
+						<cite className="not-italic text-sm rounded-lg py-1 px-2 bg-zinc-700 text-zinc-200">
 							{finalProduct.category}
 						</cite>
 						<cite>
 							{ratingStars.map((s, i) => (
-								<span key={i} className="text-yellow-400 dark:bg-yellow-600">
+								<span key={i} className="text-yellow-500 dark:text-yellow-400">
 									{s}
 								</span>
 							))}
