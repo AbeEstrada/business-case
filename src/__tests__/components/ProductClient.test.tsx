@@ -34,9 +34,9 @@ describe("ProductClient", () => {
 	it("should render the component with the initial product from props", () => {
 		render(<ProductClient product={mockProduct} />);
 
-		expect(screen.getByText(/Title: Test Product/i)).toBeInTheDocument();
-		expect(screen.getByText(/Category: Electronics/i)).toBeInTheDocument();
-		expect(screen.getByText("Price: $1,000.00")).toBeInTheDocument();
+		expect(screen.getByText(/Test Product/i)).toBeInTheDocument();
+		expect(screen.getByText(/Electronics/i)).toBeInTheDocument();
+		expect(screen.getByText("$1,000.00")).toBeInTheDocument();
 	});
 
 	it("should use product data from the search parameter if it exists and is valid", () => {
@@ -58,8 +58,8 @@ describe("ProductClient", () => {
 			rerender(<ProductClient product={mockProduct} />);
 		});
 
-		expect(screen.getByText("Title: New Product")).toBeInTheDocument();
-		expect(screen.getByText("Price: $1,500.00")).toBeInTheDocument();
+		expect(screen.getByText("New Product")).toBeInTheDocument();
+		expect(screen.getByText("$1,500.00")).toBeInTheDocument();
 	});
 
 	it("should fall back to props if the search parameter is invalid JSON", () => {
@@ -71,8 +71,8 @@ describe("ProductClient", () => {
 
 		render(<ProductClient product={mockProduct} />);
 
-		expect(screen.getByText(/Title: Test Product/i)).toBeInTheDocument();
-		expect(screen.getByText("Price: $1,000.00")).toBeInTheDocument();
+		expect(screen.getByText(/Test Product/i)).toBeInTheDocument();
+		expect(screen.getByText("$1,000.00")).toBeInTheDocument();
 
 		consoleSpy.mockRestore();
 	});

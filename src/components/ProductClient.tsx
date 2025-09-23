@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import type { ProductInterface } from "@/interfaces/Products";
 import BarChart from "./BarChart";
+import ImageGallery from "./ImageGallery";
 
 interface ProductClientProps {
 	product: ProductInterface;
@@ -43,35 +44,45 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 		currency: "MXN",
 	}).format(finalProduct.price ?? 0);
 
+	const rating: number = Math.round(finalProduct.rating ?? 0);
+	const ratingStars = Array.from({ length: 5 }, (_, i) =>
+		i < rating ? "★" : "☆",
+	);
+
 	return (
 		<main className="m-4">
-			<h1>Title: {finalProduct.title}</h1>
-			<p>Category: {finalProduct.category}</p>
-			<p>Description: {finalProduct.description}</p>
-			<p>Price: {localPrice}</p>
-			<p>Discount: {finalProduct.discountPercentage}%</p>
-			<p>Rating: {finalProduct.rating} / 5</p>
-			<p>
-				Stock: {finalProduct.stock} units ({finalProduct.availabilityStatus})
-			</p>
-			<p>Brand: {finalProduct.brand}</p>
+			<section className="grid md:grid-cols-2">
+				<div className="px-12 mb-12">
+					<ImageGallery images={finalProduct.images ?? []} />
+				</div>
+				<div className="[&_*]:mb-2">
+					<h1 className="text-2xl">{finalProduct.title}</h1>
+					<div className="text-xl font-semibold">{localPrice}</div>
+					<div className="flex gap-x-2">
+						<cite className="not-italic text-sm font-bold rounded rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">
+							{finalProduct.brand}
+						</cite>
+						<cite className="not-italic text-sm rounded rounded-lg py-1 px-2 bg-zinc-700">
+							{finalProduct.category}
+						</cite>
+						<cite>
+							{ratingStars.map((s, i) => (
+								<span key={i}>{s}</span>
+							))}
+						</cite>
+					</div>
+					<p className="mt-4">{finalProduct.description}</p>
+					<p>
+						Stock: {finalProduct.stock} units ({finalProduct.availabilityStatus}
+						)
+					</p>
+				</div>
+			</section>
 			{chartData ? (
 				<div className="md:w-1/3 my-4">
 					<BarChart data={chartData} title="Weekly Price Trends" />{" "}
 				</div>
 			) : null}
-			<ul className="grid grid-cols-1 md:grid-cols-4 gap-4">
-				{finalProduct.images?.map((image, i) => (
-					<li key={image}>
-						<img
-							src={image}
-							loading="lazy"
-							alt={`${finalProduct.title} - Product ${i + 1}`}
-							className="block"
-						/>
-					</li>
-				))}
-			</ul>
 		</main>
 	);
 };
