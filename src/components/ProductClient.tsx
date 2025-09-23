@@ -59,9 +59,11 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 					<h1 className="text-2xl">{finalProduct.title}</h1>
 					<div className="text-xl font-semibold">{localPrice}</div>
 					<div className="flex gap-x-2">
-						<cite className="not-italic text-sm font-bold rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">
-							{finalProduct.brand}
-						</cite>
+						{finalProduct.brand ? (
+							<cite className="not-italic text-sm font-bold rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">
+								{finalProduct.brand}
+							</cite>
+						) : null}
 						<cite className="not-italic text-sm rounded-lg py-1 px-2 bg-zinc-700 text-zinc-200">
 							{finalProduct.category}
 						</cite>
