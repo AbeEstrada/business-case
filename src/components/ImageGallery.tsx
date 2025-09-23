@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import { useRef } from "react";
 
 interface ImageGalleryProps {
@@ -5,7 +6,7 @@ interface ImageGalleryProps {
 	title?: string;
 }
 
-const ImageGallery = ({ images, title = "Product" }: ImageGalleryProps) => {
+const ImageGallery: FC<ImageGalleryProps> = ({ images, title = "Product" }) => {
 	const scrollRef = useRef<HTMLDivElement>(null);
 
 	const scrollLeft = () => {
@@ -44,7 +45,7 @@ const ImageGallery = ({ images, title = "Product" }: ImageGalleryProps) => {
 						>
 							<img
 								src={image}
-								alt={`${title} - Image ${i + 1}`}
+								alt={`${title} ${i + 1}`}
 								loading="lazy"
 								className="object-contain w-full h-full px-2 py-4"
 							/>
@@ -53,11 +54,11 @@ const ImageGallery = ({ images, title = "Product" }: ImageGalleryProps) => {
 				</ul>
 			</div>
 
-			<div className="flex justify-center gap-6">
+			<div className="flex justify-center gap-6 [&_button:disabled]:opacity-30">
 				<button
 					type="button"
 					onClick={scrollLeft}
-					disabled={images.length === 0}
+					disabled={images.length < 2}
 					aria-label="Previous image"
 				>
 					Previous
@@ -65,7 +66,7 @@ const ImageGallery = ({ images, title = "Product" }: ImageGalleryProps) => {
 				<button
 					type="button"
 					onClick={scrollRight}
-					disabled={images.length === 0}
+					disabled={images.length < 2}
 					aria-label="Next image"
 				>
 					Next

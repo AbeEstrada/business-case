@@ -37,13 +37,13 @@ describe("ImageGallery", () => {
 		const customTitle = "My Awesome Product";
 		render(<ImageGallery images={mockImages} title={customTitle} />);
 
-		expect(screen.getByAltText(`${customTitle} - Image 1`)).toBeInTheDocument();
+		expect(screen.getByAltText(`${customTitle} 1`)).toBeInTheDocument();
 	});
 
 	it("should use the default title 'Product' when no title is provided", () => {
 		render(<ImageGallery images={mockImages} />);
 
-		expect(screen.getByAltText("Product - Image 1")).toBeInTheDocument();
+		expect(screen.getByAltText("Product 1")).toBeInTheDocument();
 	});
 
 	it("should render disabled buttons when the images array is empty", () => {
