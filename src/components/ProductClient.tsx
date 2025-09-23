@@ -33,8 +33,8 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 	useEffect(() => {
 		const generatedData = Array.from({ length: 6 }, () => {
 			const basePrice = finalProduct.price ?? 0;
-			const randomVariation = (Math.random() - 0.5) * 200;
-			return Math.max(1, basePrice + randomVariation);
+			const multiplier = 0.5 + Math.random() * 1.5;
+			return basePrice * multiplier;
 		});
 		setChartData([finalProduct.price ?? 0, ...generatedData]);
 	}, [finalProduct.price]);
