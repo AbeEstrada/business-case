@@ -72,7 +72,7 @@ export const Pagination: FC = () => {
 
 	return (
 		<nav className="my-12">
-			<ul className="flex justify-center gap-4 [&_li_a]:p-4">
+			<ul className="flex justify-center gap-2 md:gap-4 [&_li_a]:p-2 [&_li_a:md]:p-4">
 				<li>
 					<Link
 						href={createPageURL(currentPage - 1)}
