@@ -89,4 +89,29 @@ describe("ProductClient", () => {
 
 		expect(screen.getByTestId("bar-chart-mock")).toBeInTheDocument();
 	});
+
+	it("should render the correct number of stars for the rating", () => {
+		const productWithRating = { ...mockProduct, rating: 3 };
+		render(<ProductClient product={productWithRating} />);
+
+		const starSpans = screen.getAllByText(/★|☆/);
+		expect(starSpans).toHaveLength(5);
+
+		expect(starSpans[0]).toHaveTextContent("★");
+		expect(starSpans[1]).toHaveTextContent("★");
+		expect(starSpans[2]).toHaveTextContent("★");
+		expect(starSpans[3]).toHaveTextContent("☆");
+		expect(starSpans[4]).toHaveTextContent("☆");
+	});
+
+	it("should render stock and availability information", () => {
+		const productWithStock = {
+			...mockProduct,
+			stock: 50,
+			availabilityStatus: "In Stock",
+		};
+		render(<ProductClient product={productWithStock} />);
+
+		expect(screen.getByText("Stock: 50 units (In Stock)")).toBeInTheDocument();
+	});
 });
