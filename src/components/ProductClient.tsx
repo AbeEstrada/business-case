@@ -52,7 +52,7 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 	return (
 		<main className="m-4">
 			<section className="grid md:grid-cols-2">
-				<div className="px-12 mb-12">
+				<div className="md:px-12 mb-12">
 					<ImageGallery images={finalProduct.images ?? []} />
 				</div>
 				<div className="[&_*]:mb-2">
