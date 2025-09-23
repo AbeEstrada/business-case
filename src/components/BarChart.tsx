@@ -19,11 +19,18 @@ const BarChart: FC<BarChartProps> = ({
 		return <div>No data to display.</div>;
 	}
 
+	const localPrice = new Intl.NumberFormat("es-MX", {
+		style: "currency",
+		currency: "MXN",
+	});
+
 	const validData = data.map((d) => (typeof d === "number" && d >= 0 ? d : 0));
 	const maxValue = Math.max(...validData);
 	if (maxValue === 0) {
 		validData.push(1);
 	}
+
+	const formattedPrices = validData.map((value) => localPrice.format(value));
 
 	const barSpacing = 10;
 	const minBarWidth = 20;
@@ -89,7 +96,7 @@ const BarChart: FC<BarChartProps> = ({
 								fontSize="12"
 								fill="white"
 							>
-								{value.toLocaleString()}
+								{formattedPrices[i]}
 							</text>
 						</g>
 					);

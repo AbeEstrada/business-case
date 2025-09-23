@@ -11,6 +11,11 @@ describe("BarChart", () => {
 	it("should render a bar chart with given data", () => {
 		const testData = [10, 20, 30];
 		const testTitle = "Test Bar Chart";
+		const localPrice = new Intl.NumberFormat("es-MX", {
+			style: "currency",
+			currency: "MXN",
+		});
+
 		render(<BarChart data={testData} title={testTitle} />);
 
 		const figure = screen.getByRole("figure", { name: testTitle });
@@ -23,12 +28,13 @@ describe("BarChart", () => {
 		expect(titleElement).toBeInTheDocument();
 
 		testData.forEach((value, index) => {
+			const formattedValue = localPrice.format(value);
 			const barTitle = screen.getByText(`Bar ${index + 1}: ${value}`, {
 				selector: "title",
 			});
 			expect(barTitle).toBeInTheDocument();
 
-			const textLabel = screen.getByText(value.toLocaleString());
+			const textLabel = screen.getByText(formattedValue);
 			expect(textLabel).toBeInTheDocument();
 		});
 
