@@ -26,9 +26,6 @@ const BarChart: FC<BarChartProps> = ({
 
 	const validData = data.map((d) => (typeof d === "number" && d >= 0 ? d : 0));
 	const maxValue = Math.max(...validData);
-	if (maxValue === 0) {
-		validData.push(1);
-	}
 
 	const formattedPrices = validData.map((value) => localPrice.format(value));
 
