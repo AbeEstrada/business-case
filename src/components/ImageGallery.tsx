@@ -9,19 +9,14 @@ interface ImageGalleryProps {
 const ImageGallery: FC<ImageGalleryProps> = ({ images, title = "Product" }) => {
 	const scrollRef = useRef<HTMLDivElement>(null);
 
-	const scrollLeft = () => {
+	const handleScroll = (direction: "left" | "right") => {
 		if (scrollRef.current) {
+			const scrollAmount =
+				direction === "left"
+					? -scrollRef.current.clientWidth
+					: scrollRef.current.clientWidth;
 			scrollRef.current.scrollBy({
-				left: -scrollRef.current.clientWidth,
-				behavior: "smooth",
-			});
-		}
-	};
-
-	const scrollRight = () => {
-		if (scrollRef.current) {
-			scrollRef.current.scrollBy({
-				left: scrollRef.current.clientWidth,
+				left: scrollAmount,
 				behavior: "smooth",
 			});
 		}
@@ -31,11 +26,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images, title = "Product" }) => {
 		<div className="w-full max-w-4xl mx-auto">
 			<div
 				ref={scrollRef}
-				className="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth mb-4 bg-zinc-700"
-				style={{
-					scrollSnapType: "x mandatory",
-					WebkitOverflowScrolling: "touch",
-				}}
+				className="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth mb-4 rounded-lg bg-zinc-400 dark:bg-zinc-700"
 			>
 				<ul className="flex w-full h-64 sm:h-80 md:h-96">
 					{images.map((image, i) => (
@@ -57,7 +48,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images, title = "Product" }) => {
 			<div className="flex justify-center gap-6 [&_button:disabled]:opacity-30">
 				<button
 					type="button"
-					onClick={scrollLeft}
+					onClick={() => handleScroll("left")}
 					disabled={images.length < 2}
 					aria-label="Previous image"
 				>
@@ -65,7 +56,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images, title = "Product" }) => {
 				</button>
 				<button
 					type="button"
-					onClick={scrollRight}
+					onClick={() => handleScroll("right")}
 					disabled={images.length < 2}
 					aria-label="Next image"
 				>
