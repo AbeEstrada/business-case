@@ -12,10 +12,22 @@ export async function GET(
     const product = await getProductById(id);
     if (!product) return Response.json({ error: "Product not found" }, { status: 404 });
 
-    return Response.json(product);
+    return Response.json(product, {
+			headers: {
+				"Cache-Control": "public, max-age=300",
+			},
+		});
 	} catch (error) {
 		const errorMessage =
 			error instanceof Error ? error.message : "Unknown error occurred";
-		return Response.json({ error: errorMessage }, { status: 500 });
+		return Response.json(
+			{ error: errorMessage },
+			{
+				status: 500,
+				headers: {
+					"Cache-Control": "no-store",
+				},
+			},
+		);
 	}
 }

@@ -30,15 +30,30 @@ export async function GET(request: NextRequest) {
 			limit: limitNumber,
 		});
 
-		return Response.json({
-			products: data.products ?? [],
-			total: data.total ?? 0,
-			skip: data.skip ?? 0,
-			limit: data.limit ?? limitNumber,
-		});
+		return Response.json(
+			{
+				products: data.products ?? [],
+				total: data.total ?? 0,
+				skip: data.skip ?? 0,
+				limit: data.limit ?? limitNumber,
+			},
+			{
+				headers: {
+					"Cache-Control": "public, max-age=300",
+				},
+			},
+		);
 	} catch (error) {
 		const errorMessage =
 			error instanceof Error ? error.message : "Unknown error occurred";
-		return Response.json({ error: errorMessage }, { status: 500 });
+		return Response.json(
+			{ error: errorMessage },
+			{
+				status: 500,
+				headers: {
+					"Cache-Control": "no-store",
+				},
+			},
+		);
 	}
 }
