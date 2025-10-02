@@ -42,6 +42,7 @@ export const CategorySelect: FC = () => {
 
 	return (
 		<select
+			aria-label="Categories"
 			value={currentCategory ?? ""}
 			onChange={handleCategoryChange}
 			className="rounded border px-2 py-1 text-black dark:text-white dark:bg-zinc-950"

@@ -46,6 +46,7 @@ export const SortSelect: FC = () => {
 
 	return (
 		<select
+			aria-label="Sort"
 			value={currentSort ?? ""}
 			onChange={handleSortChange}
 			className="rounded border px-2 py-1 text-black dark:text-white dark:bg-zinc-950"

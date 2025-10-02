@@ -55,7 +55,7 @@ export const Pagination: FC = () => {
 
 		return pages.map((page, i) => {
 			if (page === ellipsis) {
-				return <span key={i}>{ellipsis}</span>;
+				return <li key={i}>{ellipsis}</li>;
 			}
 			const isCurrentPage = page === currentPage;
 			const itemClasses = isCurrentPage ? "text-red-500" : "hover:text-red-500";
