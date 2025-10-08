@@ -21,6 +21,7 @@ export const CategorySelect: FC = () => {
 		} else {
 			params.set("category", selectedValue);
 		}
+		params.delete("page");
 
 		router.push(`?${params.toString()}`);
 	};
