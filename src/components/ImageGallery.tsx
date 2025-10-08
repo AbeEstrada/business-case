@@ -27,6 +27,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images, title = "Product" }) => {
 			<div
 				ref={scrollRef}
 				className="flex overflow-x-scroll snap-x snap-mandatory scroll-smooth mb-4 rounded-lg bg-zinc-400 dark:bg-zinc-700"
+				tabIndex={-1}
 			>
 				<ul className="flex w-full h-64 sm:h-80 md:h-96">
 					{images.map((image, i) => (
