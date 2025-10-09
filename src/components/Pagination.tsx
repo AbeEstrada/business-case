@@ -59,10 +59,11 @@ export const Pagination: FC = () => {
 			}
 			const isCurrentPage = page === currentPage;
 			const itemClasses = isCurrentPage ? "text-red-500" : "hover:text-red-500";
+			const ariaCurrent = isCurrentPage ? { "aria-current": "page" as const } : {};
 
 			return (
 				<li key={i}>
-					<Link href={createPageURL(page)} className={`${itemClasses}`}>
+					<Link href={createPageURL(page)} className={`${itemClasses}`} {...ariaCurrent}>
 						{page}
 					</Link>
 				</li>
