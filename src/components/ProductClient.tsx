@@ -52,12 +52,25 @@ const ProductClient: FC<ProductClientProps> = ({ product }) => {
 	return (
 		<main className="m-4">
 			<section className="grid md:grid-cols-2">
-				<div className="md:px-12 mb-12">
+				<div
+					className="md:px-12 mb-12"
+					style={{ viewTransitionName: `product-image-${product.id}` }}
+				>
 					<ImageGallery images={finalProduct.images ?? []} />
 				</div>
 				<div className="[&_*]:mb-2">
-					<h1 className="text-2xl">{finalProduct.title}</h1>
-					<div className="text-xl font-semibold">{localPrice}</div>
+					<h3
+						className="text-2xl"
+						style={{ viewTransitionName: `product-title-${finalProduct.id}` }}
+					>
+						{finalProduct.title}
+					</h3>
+					<div
+						className="text-xl font-semibold"
+						style={{ viewTransitionName: `product-price-${product.id}` }}
+					>
+						{localPrice}
+					</div>
 					<div className="flex gap-x-2">
 						{finalProduct.brand ? (
 							<cite className="not-italic text-sm font-bold rounded-lg py-1 px-2 bg-zinc-300 text-zinc-900">

@@ -1,6 +1,5 @@
 import type { FC } from "react";
 import type { ProductInterface } from "@/interfaces/Products";
-import Link from "next/link";
 
 interface ProductCardProps {
 	product?: ProductInterface;
@@ -24,23 +23,23 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 
 	return (
 		<article className="group relative mx-auto">
-			<Link
-				href={{
-					pathname: `/product/${product.id}`,
-					query: { product: JSON.stringify(product) },
-				}}
-				as={`/product/${product.id}`}
+			<a
+				href={`/product/${product.id}`}
 				className="group inline-block h-full p-4 rounded border box-border hover:bg-zinc-200 dark:hover:bg-zinc-800 focus:border-2 focus:outline-hidden active:outline-hidden"
 				tabIndex={0}
 				aria-label={`View details for ${product.title}`}
 			>
-				<h3>{product.title}</h3>
-				<p>Price: {localPrice}</p>
+				<h3 style={{ viewTransitionName: `product-title-${product.id}` }}>
+					{product.title}
+				</h3>
+				<p style={{ viewTransitionName: `product-price-${product.id}` }}>
+					Price: {localPrice}
+				</p>
 				<p>Rating: {product.rating}</p>
-				<p>
+				<p style={{ viewTransitionName: `product-image-${product.id}` }}>
 					<img src={product.thumbnail} loading="lazy" alt={product.title} />
 				</p>
-			</Link>
+			</a>
 		</article>
 	);
 };

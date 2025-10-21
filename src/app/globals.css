@@ -6,6 +6,9 @@
   body {
     @apply bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100;
   }
+  @view-transition {
+    navigation:auto
+  }
 }
 
 @layer utilities {
