@@ -23,6 +23,8 @@ export const Pagination: FC = () => {
 
 	const pageNumbers = Array.from({ length: lastPage }, (_, i) => i + 1);
 
+	if (pageNumbers.length <= 1) return null;
+
 	const renderPageNumbers = () => {
 		let pages: (number | string)[] = [];
 		const maxPagesToShow = 5;
