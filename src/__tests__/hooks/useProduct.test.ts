@@ -46,9 +46,14 @@ beforeAll(() => {
 	global.fetch = jest.fn();
 });
 
+beforeEach(() => {
+	jest.spyOn(console, "warn").mockImplementation(() => {});
+});
+
 afterEach(() => {
 	mockSessionStorageMock.clear();
 	jest.clearAllMocks();
+	jest.restoreAllMocks();
 });
 
 const mockSessionStorageMock = {
