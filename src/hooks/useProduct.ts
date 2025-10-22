@@ -5,11 +5,55 @@ import type {
 } from "@/interfaces/Products";
 import { CACHE_DURATION } from "@/lib/constants";
 
-// Export for tests
-export const cache = new Map<
-	string,
-	{ data: ProductsInterface; timestamp: number }
->();
+export const setCacheItem = (key: string, data: ProductsInterface): void => {
+	try {
+		const item = {
+			data,
+			timestamp: Date.now(),
+		};
+		sessionStorage.setItem(`products_cache_${key}`, JSON.stringify(item));
+	} catch (e) {
+		console.warn("Failed to write to sessionStorage", e);
+	}
+};
+
+export const getCacheItem = (key: string): ProductsInterface | null => {
+	try {
+		const itemStr = sessionStorage.getItem(`products_cache_${key}`);
+		if (!itemStr) return null;
+
+		const item = JSON.parse(itemStr);
+		if (Date.now() - item.timestamp < CACHE_DURATION) {
+			return item.data;
+		} else {
+			// Expired
+			sessionStorage.removeItem(`products_cache_${key}`);
+		}
+	} catch (e) {
+		console.warn("Failed to read from sessionStorage", e);
+		sessionStorage.removeItem(`products_cache_${key}`);
+	}
+	return null;
+};
+
+export const cleanupExpiredCache = (): void => {
+	try {
+		for (let i = 0; i < sessionStorage.length; i++) {
+			const key = sessionStorage.key(i);
+			if (key?.startsWith("products_cache_")) {
+				const itemStr = sessionStorage.getItem(key);
+				if (itemStr) {
+					const item = JSON.parse(itemStr);
+					if (Date.now() - item.timestamp >= CACHE_DURATION) {
+						sessionStorage.removeItem(key);
+					}
+				}
+			}
+		}
+	} catch (e) {
+		console.warn("Cache cleanup failed", e);
+	}
+};
 
 interface UseProductsParams {
 	q?: string | null;
@@ -39,11 +83,9 @@ export const useProducts = ({
 
 	const fetchProducts = useCallback(
 		async (signal: AbortSignal, retries = 3) => {
-			const now = Date.now();
-			const cachedData = cache.get(cacheKey);
-
-			if (cachedData && now - cachedData.timestamp < CACHE_DURATION) {
-				setData(cachedData.data);
+			const cachedData = getCacheItem(cacheKey);
+			if (cachedData) {
+				setData(cachedData);
 				setLoading(false);
 				setHasLoaded(true);
 				return;
@@ -64,7 +106,6 @@ export const useProducts = ({
 
 				const hasSearchParams = Boolean(q || category || sort || order);
 				const hasBasicParams = Boolean(page || limit);
-
 				const url = hasSearchParams
 					? `/api/products/search?${params.toString()}`
 					: hasBasicParams
@@ -79,7 +120,6 @@ export const useProducts = ({
 				}
 
 				const response = await fetch(url, { signal });
-
 				if (!response.ok) {
 					if (response.status === 429) {
 						throw new Error("Too many requests. Please try again later.");
@@ -88,8 +128,7 @@ export const useProducts = ({
 				}
 
 				const json = await response.json();
-				cache.set(cacheKey, { data: json, timestamp: now });
-
+				setCacheItem(cacheKey, json);
 				setData(json);
 				setHasLoaded(true);
 			} catch (err) {
@@ -97,7 +136,6 @@ export const useProducts = ({
 					console.log("Fetch aborted");
 					return;
 				}
-
 				if (retries > 0) {
 					console.warn(`Fetch failed, retrying... (${retries} attempts left)`);
 					await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -116,9 +154,10 @@ export const useProducts = ({
 	);
 
 	useEffect(() => {
+		cleanupExpiredCache();
+
 		const abortController = new AbortController();
 		fetchProducts(abortController.signal);
-
 		return () => {
 			abortController.abort();
 		};
@@ -128,22 +167,35 @@ export const useProducts = ({
 };
 
 export const getCachedProduct = (id: string): ProductInterface | null => {
-	const now = Date.now();
+	const idNum = parseInt(id, 10);
+	if (Number.isNaN(idNum)) return null;
+	try {
+		for (let i = 0; i < sessionStorage.length; i++) {
+			const key = sessionStorage.key(i);
+			if (key?.startsWith("products_cache_")) {
+				const itemStr = sessionStorage.getItem(key);
+				if (!itemStr) continue;
 
-	const cacheEntries = Array.from(cache.entries());
-
-	// Retrieve product from the cached products array
-	for (const [, cachedData] of cacheEntries) {
-		if (now - cachedData.timestamp < CACHE_DURATION) {
-			const product = cachedData.data.products?.find(
-				(p: ProductInterface) => p.id === parseInt(id, 10),
-			);
-			if (product) {
-				return product;
+				const item = JSON.parse(itemStr);
+				if (Date.now() - item.timestamp < CACHE_DURATION) {
+					const products = item.data?.products as
+						| ProductInterface[]
+						| undefined;
+					if (Array.isArray(products)) {
+						const product = products.find((p) => p.id === idNum);
+						if (product) {
+							return product;
+						}
+					}
+				} else {
+					// Expired entry
+					sessionStorage.removeItem(key);
+				}
 			}
 		}
+	} catch (e) {
+		console.warn("Error reading product from cache", e);
 	}
 
-	// Force an api call
 	return null;
 };

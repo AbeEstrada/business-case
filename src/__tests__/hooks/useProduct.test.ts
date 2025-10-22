@@ -1,13 +1,43 @@
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { useProducts, getCachedProduct, cache } from "@/hooks/useProduct";
+import {
+	useProducts,
+	getCachedProduct,
+	getCacheItem,
+} from "@/hooks/useProduct";
 import type { ProductsInterface } from "@/interfaces/Products";
+
+const mockSessionStorage: Record<string, string> = {};
+
+const sessionStorageMock = {
+	getItem: jest.fn((key) => mockSessionStorage[key] || null),
+	setItem: jest.fn((key, value) => {
+		mockSessionStorage[key] = String(value);
+	}),
+	removeItem: jest.fn((key) => {
+		delete mockSessionStorage[key];
+	}),
+	clear: jest.fn(() => {
+		Object.keys(mockSessionStorage).forEach((key) => {
+			delete mockSessionStorage[key];
+		});
+	}),
+	key: jest.fn((index) => Object.keys(mockSessionStorage)[index] || null),
+	get length() {
+		return Object.keys(mockSessionStorage).length;
+	},
+};
+
+Object.defineProperty(window, "sessionStorage", {
+	value: sessionStorageMock,
+	writable: true,
+});
 
 const mockData: ProductsInterface = {
 	products: [
 		{ id: 1, title: "Product 1", price: 100 },
 		{ id: 2, title: "Product 2", price: 50 },
 	],
-	total: 1,
+	total: 2,
 	skip: 0,
 	limit: 10,
 };
@@ -17,8 +47,98 @@ beforeAll(() => {
 });
 
 afterEach(() => {
-	cache.clear();
+	mockSessionStorageMock.clear();
 	jest.clearAllMocks();
+});
+
+const mockSessionStorageMock = {
+	clear: () => {
+		Object.keys(mockSessionStorage).forEach((key) => {
+			delete mockSessionStorage[key];
+		});
+		sessionStorageMock.getItem.mockClear();
+		sessionStorageMock.setItem.mockClear();
+		sessionStorageMock.removeItem.mockClear();
+		sessionStorageMock.key.mockClear();
+	},
+};
+
+jest.mock("@/lib/constants", () => ({
+	CACHE_DURATION: 3600000, // 1 hour in ms
+}));
+
+describe("getCacheItem", () => {
+	const mockProducts: ProductsInterface = {
+		products: [{ id: 1, title: "Cached Product", price: 99 }],
+		total: 1,
+		skip: 0,
+		limit: 10,
+	};
+
+	afterEach(() => {
+		mockSessionStorageMock.clear();
+	});
+
+	it("should return cached data when item exists and is not expired", () => {
+		const key = "test-key";
+		const cacheEntry = {
+			data: mockProducts,
+			timestamp: Date.now(),
+		};
+		sessionStorage.setItem(`products_cache_${key}`, JSON.stringify(cacheEntry));
+
+		const result = getCacheItem(key);
+		expect(result).toEqual(mockProducts);
+	});
+
+	it("should return null when no item exists for the key", () => {
+		const result = getCacheItem("non-existent-key");
+		expect(result).toBeNull();
+		// Ensure nothing was removed (optional)
+		expect(sessionStorage.removeItem).not.toHaveBeenCalled();
+	});
+
+	it("should return null and remove item when cache is expired", () => {
+		const key = "expired-key";
+		const expiredTimestamp = Date.now() - 3600000 - 1000; // 1 hour + 1s ago
+		const cacheEntry = {
+			data: mockProducts,
+			timestamp: expiredTimestamp,
+		};
+		sessionStorage.setItem(`products_cache_${key}`, JSON.stringify(cacheEntry));
+
+		const result = getCacheItem(key);
+		expect(result).toBeNull();
+		expect(sessionStorage.removeItem).toHaveBeenCalledWith(
+			`products_cache_${key}`,
+		);
+	});
+
+	it("should return null and remove item when cache data is malformed (JSON parse error)", () => {
+		const key = "malformed-key";
+		sessionStorage.setItem(`products_cache_${key}`, "not-valid-json");
+
+		const result = getCacheItem(key);
+		expect(result).toBeNull();
+		expect(sessionStorage.removeItem).toHaveBeenCalledWith(
+			`products_cache_${key}`,
+		);
+	});
+
+	it("should return null and remove item when cache structure is invalid (missing data/timestamp)", () => {
+		const key = "invalid-structure-key";
+		// Missing timestamp
+		sessionStorage.setItem(
+			`products_cache_${key}`,
+			JSON.stringify({ data: mockProducts }),
+		);
+
+		const result = getCacheItem(key);
+		expect(result).toBeNull();
+		expect(sessionStorage.removeItem).toHaveBeenCalledWith(
+			`products_cache_${key}`,
+		);
+	});
 });
 
 describe("useProducts", () => {
@@ -125,7 +245,8 @@ describe("useProducts", () => {
 		expect(fetch).not.toHaveBeenCalled();
 
 		await act(async () => {
-			await jest.advanceTimersByTimeAsync(500);
+			jest.advanceTimersByTime(500);
+			await Promise.resolve();
 		});
 
 		await waitFor(() => {
@@ -138,47 +259,83 @@ describe("useProducts", () => {
 		jest.useRealTimers();
 	});
 
+	it("should ignore invalid delay values (non-numeric)", async () => {
+		(global.fetch as jest.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: jest.fn().mockResolvedValueOnce(mockData),
+		});
+
+		const { result } = renderHook(() => useProducts({ delay: "abc" }));
+
+		await waitFor(() => {
+			expect(result.current.loading).toBe(false);
+			expect(result.current.data).toEqual(mockData);
+		});
+
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it("should use /api/products (not /search) when only page/limit are provided", async () => {
+		(global.fetch as jest.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: jest.fn().mockResolvedValueOnce(mockData),
+		});
+
+		const { result } = renderHook(() =>
+			useProducts({ page: "2", limit: "20" }),
+		);
+
+		await waitFor(() => {
+			expect(result.current.loading).toBe(false);
+		});
+
+		expect(fetch).toHaveBeenCalledWith(
+			"/api/products?page=2&limit=20",
+			expect.any(Object),
+		);
+	});
+
 	it("should return a specific product from cache when available", () => {
-		const cachedData = {
+		const cacheKey = JSON.stringify({
+			q: null,
+			category: null,
+			page: null,
+			sort: null,
+			order: null,
+			limit: null,
+		});
+		const cachedItem = {
 			timestamp: Date.now(),
-			data: {
-				products: [
-					{ id: 1, title: "Product 1", price: 100 },
-					{ id: 2, title: "Product 2", price: 50 },
-				],
-				total: 2,
-				skip: 0,
-				limit: 10,
-			},
+			data: mockData,
 		};
-		cache.set("/api/products", cachedData);
+		sessionStorage.setItem(
+			`products_cache_${cacheKey}`,
+			JSON.stringify(cachedItem),
+		);
 
 		const product = getCachedProduct("2");
 		expect(product).toEqual({ id: 2, title: "Product 2", price: 50 });
 	});
 
 	it("should return null if the product is not found in the cache", () => {
-		const cachedData = {
+		const cacheKey = JSON.stringify({});
+		const cachedItem = {
 			timestamp: Date.now(),
-			data: {
-				products: [
-					{ id: 1, title: "Product 1", price: 100 },
-					{ id: 2, title: "Product 2", price: 50 },
-				],
-				total: 2,
-				skip: 0,
-				limit: 10,
-			},
+			data: mockData,
 		};
-		cache.set("/api/products", cachedData);
+		sessionStorage.setItem(
+			`products_cache_${cacheKey}`,
+			JSON.stringify(cachedItem),
+		);
 
 		const product = getCachedProduct("99");
 		expect(product).toBeNull();
 	});
 
 	it("should return null if the cache has expired", () => {
-		const expiredTimestamp = Date.now() - 60 * 60 * 1000 - 1;
-		const cachedData = {
+		const expiredTimestamp = Date.now() - 60 * 60 * 1000 - 1; // 1 hour + 1ms ago
+		const cacheKey = JSON.stringify({});
+		const cachedItem = {
 			timestamp: expiredTimestamp,
 			data: {
 				products: [{ id: 1, title: "Product 1", price: 100 }],
@@ -187,14 +344,24 @@ describe("useProducts", () => {
 				limit: 10,
 			},
 		};
-		cache.set("/api/products", cachedData);
+		sessionStorage.setItem(
+			`products_cache_${cacheKey}`,
+			JSON.stringify(cachedItem),
+		);
 
+		const product = getCachedProduct("1");
+		expect(product).toBeNull();
+		expect(sessionStorage.getItem(`products_cache_${cacheKey}`)).toBeNull();
+	});
+
+	it("should return null if cache is empty", () => {
+		mockSessionStorageMock.clear();
 		const product = getCachedProduct("1");
 		expect(product).toBeNull();
 	});
 
-	it("should return null if cache is empty", () => {
-		const product = getCachedProduct("1");
+	it("should return null for non-numeric product ID", () => {
+		const product = getCachedProduct("abc");
 		expect(product).toBeNull();
 	});
 });
